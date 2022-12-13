@@ -1,6 +1,6 @@
 ---
 title: Home
-permalink: /test123a.html
+permalink: /index.html
 layout: none
 ---
 <html xmlns="http://www.w3.org/1999/xhtml"> 
