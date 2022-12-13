@@ -1,0 +1,136 @@
+window.config = window.config || {}
+
+// fix for legacy config
+if (~window.location.href.indexOf('bloomberg.com/graphics/') && config.bb_brand === 'bpol') {
+  config.bb_brand = 'bbiz'
+}
+
+// fall back to default ad_code if none is specified
+config.ad_code = config.ad_code || 'business/news/graphics'
+// check for test-env query parm; switch ad_code if present
+if (~window.location.search.indexOf('ad-test-environment=')) {
+  config.ad_code = config.ad_code.replace('/business/', '/testbusiness/')
+}
+
+// Google Tag Manager
+// TODO: when we switch to json-ld for parsely, will need to update headline & vertical (but keep these selectors as fallback)
+window.dataLayer = window.dataLayer || []
+var data = {
+  adcode: config.ad_code,
+  attributor: 'visdata',
+  author: config.bb_author,
+  brand: config.bb_brand,
+  contentType: 'content-graphic',
+  headline: document.head.querySelector('meta[name="parsely-title"]') && document.head.querySelector('meta[name="parsely-title"]').content,
+  legacy_bb_c_type: 'dataviz',
+  legacy_bb_category: config.bb_category || 'Bloomberg Graphics',
+  legacy_bb_cg_2: 'Graphics',
+  legacy_bb_section: 'insights',
+  pageType: 'content',
+  publishedAt: config.bb_pub_d,
+  refresh: 'false',
+  parselySite: 'bloomberg.com',
+  slug: config.bb_slug,
+  storyId: config.bb_groupId,
+  template: 'graphics-standalone-html',
+  title: document.title,
+  topic: config.org,
+  transporter: 'false',
+  vertical: document.head.querySelector('meta[name="parsely-section"]') && document.head.querySelector('meta[name="parsely-section"]').content
+}
+for (var key in data) {
+  if (data[key] === '') delete data[key]
+}
+dataLayer.push(data)
+
+// load 3rd party tracking
+!(function () {
+  window._sf_async_config = window._sf_async_config || {}
+
+  /** CONFIGURATION START **/
+  _sf_async_config.uid = 15087
+  _sf_async_config.useCanonical = true
+  _sf_async_config.sections = config.bb_cg_2
+  _sf_async_config.authors = config.bb_cg_2
+  /** CONFIGURATION END **/
+
+  if (isTerminal) return
+
+  window._sf_endpt = (new Date()).getTime()
+  // var e = document.createElement('script')
+  // e.setAttribute('language', 'javascript')
+  // e.setAttribute('type', 'text/javascript')
+  // e.setAttribute('src', '//static.chartbeat.com/js/chartbeat.js')
+  // document.body.appendChild(e)
+
+  var f = document.createElement('script')
+  f.setAttribute('language', 'javascript')
+  f.setAttribute('type', 'text/javascript')
+  f.setAttribute('src', '//connect.facebook.net/en_US/all.js')
+  document.body.appendChild(f)
+})()
+
+// load GTM
+!(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MNTH5N')
+
+// Legacy: load ad into iframe
+;(function() {
+  var minWidth = 1060
+
+  if (isTerminal || window.innerWidth < minWidth) return
+  var slug = config.bb_slug;
+
+  var ads = document.getElementsByClassName('bannerad');
+  if(ads.length<1) return;
+
+  var new_leader = '<iframe width="728" height="90" id="lb_ad_frame" style="visibility:hidden;"' +
+      'onload="this.style.visibility=' + "'visible'" +
+      '" class="ad_frame" scrolling="no" frameborder="no" src="' +
+      '//www.bloomberg.com/graphics/assets/ad.html?url=/' + config.bb_slug +
+      "&size=728x90|1x1&iu="+config.ad_code+"&correlator=" +
+      (config.correlator || new String(Math.random()).substring(2,11));
+
+  for (var i=0; i< ads.length; i++){
+      ads[i].style.display = "block";
+      var randValue = new String(Math.random()).substring(2,11);
+      var n = i + 1;
+      ads[i].innerHTML = new_leader + '&position=leaderboard' + n + '&ord=' + randValue + '"></iframe>';
+  }
+
+
+  // only add scrolling refesh adds
+  if (!config.num_ad_scroll_refesh || config.num_ad_scroll_refesh < 2) return
+
+  window.setInterval(function(){
+    // if hidden is defined and true, don't reload
+    if (!((typeof document.hidden === "undefined") || !document.hidden)) return
+
+    // don't reload if window is too small
+    if (window.innerWidth < minWidth) return
+
+    var ad = d3.select(ads[0]).style({overflow: 'hidden', height: '90px'})
+
+    var randValue = new String(Math.random()).substring(2,11);
+    var adStr = new_leader + '&position=leaderboard' + 1 + '&ord=' + randValue + '"></iframe>'
+    ad.append('div').html(adStr)
+
+    window.setTimeout(function(){
+      var numIframes = ad.selectAll('iframe').size()
+      ad.selectAll('iframe')
+          .filter(function(d, i){ return i < numIframes - 1 })
+          .remove()
+
+    }, 2000)
+  }, 60*1000)
+
+
+})();
+
+// Legacy: define tracker function
+if (!window.tracker) {
+  window.tracker = function(){}
+}
