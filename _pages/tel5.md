@@ -119,7 +119,7 @@ function getStreams() {
 		console.log(a);  
 	   	console.log(data2.value.id +' - '+data66+' - '+data2.value.name+' - '+color+' - '+before66c_+' - '+before_);
 		dude78.push({"type":"Feature","id":"3298","properties":{"name":"Ashton-under-Lyne","density":63.50},"geometry":{"type":"Polygon","coordinates":[[[-2.150474,53.472571],[-2.161498,53.474875],[-2.16965,53.486775],[-2.163386,53.496724],[-2.178685,53.505833],[-2.173218,53.51212],[-2.156231,53.5158],[-2.146436,53.521038],[-2.137239,53.515123],[-2.133415,53.508903],[-2.118281,53.505729],[-2.103361,53.509626],[-2.092124,53.520599],[-2.061846,53.522365],[-2.056528,53.513399],[-2.056494,53.505455],[-2.068884,53.496795],[-2.068265,53.492058],[-2.074903,53.480737],[-2.075835,53.482685],[-2.100914,53.481646],[-2.111759,53.46762],[-2.122242,53.482833],[-2.128188,53.485759],[-2.150474,53.472571]]]}});
-		dude77.push({type:String("Feature"),id:parseInt(data2.value.id),properties:{name:String(data2.value.name),color:String(color),party:String(data66)},geometry:{type:before66c_,coordinates:Array(before_)}});
+		dude77.push({type:toString("Feature"),id:data2.value.id.toString(),properties:{name:data2.value.name,color:color,party:data66},geometry:{type:before66c_,coordinates:before_}});
     	}	
   	};
 	httpRequest1.open('GET', 'https://members-api.parliament.uk/api/Location/Constituency/'+data2.value.id+'/Geometry');
@@ -248,8 +248,7 @@ $('#info3').append('<p>Turnout : ' + dude5[0].turnout + '</p>');
 }
 console.log(fruits2[0]);
 var dude55a = fruits2[0];
-var myArr = [dude77];
-console.log(fruits2[0]);
+
 console.log('wtf');
 </script>
 </body>
